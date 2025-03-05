@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task List</title>
+  <style>
+    /* Apply black background similar to Google home page */
+    body {
+      background-color: #202124; /* Dark background color */
+      font-family: 'Roboto', sans-serif;
+      color: white;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+    }
+
+    /* Title and Subtitle styling */
+    .title {
+      text-align: center;
+      padding: 50px;
+    }
+
+    /* Distinct colors for each letter of "Welcome Sai" */
+    h1 {
+      font-size: 28px; /* Title font size */
+      font-weight: bold;
+      margin: 0;
+    }
+
+    h1 span {
+      font-family: 'Google Sans', sans-serif;
+      display: inline-block;
+    }
+
+    h1 .w { color: #4285F4; }
+    h1 .e1 { color: #EA4335; }
+    h1 .l1 { color: #FBBC05; }
+    h1 .c { color: #34A853; }
+    h1 .o1 { color: #FFBB33; }
+    h1 .m { color: #0088FF; }
+    h1 .e2 { color: #F44336; }
+    h1 .s { color: #9C27B0; }
+    h1 .a { color: #8BC34A; }
+    h1 .i { color: #607D8B; }
+
+    p {
+      font-size: 18px; /* Subtitle font size */
+      color: white;
+    }
+
+    /* Section styling for the task input and list */
+    section#addtodo {
+      background-color: #ffffff; /* White background for input and buttons */
+      padding: 20px;
+      margin: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Styling for the input field and buttons */
+    #task {
+      width: calc(100% - 140px);
+      padding: 10px;
+      margin-right: 10px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      background-color: #000000; /* Black background */
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+      border-radius: 4px;
+      margin: 10px 10px;
+    }
+
+    button:hover {
+      background-color: #434343; /* Darker black for hover */
+    }
+
+    /* Task list section styling */
+    section#todo_list {
+      background-color: #ffffff; /* White background for task list */
+      padding: 20px;
+      margin: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Task list and items styling */
+    #tasklist {
+      list-style-type: decimal;
+      padding-left: 20px;
+    }
+
+    #tasklist li {
+      background-color: #f1f3f4; /* Light gray background for task */
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: bold; /* Bold text for added tasks */
+      color: black; /* Black text color */
+    }
+
+    select {
+      margin: 0 10px; /* Align status dropdown to the middle */
+      padding: 5px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
+    .delete-icon {
+      background: transparent;
+      border: none;
+      color: red;
+      font-size: 20px;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+
+    .completed-tick {
+      color: green;
+      font-size: 20px;
+      margin-left: 10px;
+      display: none;
+    }
+
+    /* Title for tasks */
+    h3#taskTitle {
+      font-size: 24px;
+      color: black; /* Black color for "Today's Tasks:" */
+      font-weight: bold; /* Bold font style */
+      text-align: left;
+      margin-bottom: 15px;
+    }
+
+    /* Menu button */
+    #menuButton {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: white;
+      color: black;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #menuButton:hover {
+      background-color: #f1f1f1;
+    }
+
+    /* Menu Dropdown */
+    #menuDropdown {
+      display: none;
+      position: fixed;
+      top: 0;
+      right: 0;
+      background-color: #000000;
+      color: white;
+      width: 250px;
+      height: 100%;
+      padding: 20px;
+      box-shadow: -4px 0 8px rgba(0, 0, 0, 0.5);
+    }
+
+    #menuDropdown button {
+      background-color: transparent;
+      color: white;
+      border: none;
+      margin: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #menuDropdown button:hover {
+      background-color: #434343;
+    }
+  </style>
+</head>
+<body>
+  <div class="title">
+    <h1>
+      <span class="w">W</span>
+      <span class="e1">e</span>
+      <span class="l1">l</span>
+      <span class="c">c</span>
+      <span class="o1">o</span>
+      <span class="m">m</span>
+      <span class="e2">e</span>
+      <span class="s">S</span>
+      <span class="a">a</span>
+      <span class="i">i</span>
+    </h1>
+    <p>Let's continue your journey of learning</p>
+  </div>
+
+  <!-- Menu Button -->
+  <button id="menuButton" onclick="toggleMenu()">☰ Menu</button>
+
+  <!-- Dropdown Menu -->
+  <div id="menuDropdown">
+    <button onclick="filterTasks('completed')">Completed</button>
+    <button onclick="filterTasks('notCompleted')">Not Completed</button>
+    <button onclick="filterTasks('onHold')">On Hold</button>
+    <button onclick="filterTasks('inProgress')">Work in Progress</button>
+  </div>
+
+  <main>
+    <section id="addtodo">
+      <input type="text" placeholder="Enter your today's To do Work here" id="task">
+      <button onclick="add();">ADD</button>
+      <button onclick="clearTask();">Clear</button>
+    </section>
+
+    <section id="todo_list">
+      <h3 id="taskTitle">Today's Tasks :</h3>
+      <ol id="tasklist"></ol>
+    </section>
+  </main>
+
+  <script>
+    let tasks = []; // Array to store tasks
+
+    // Function to add a task with a status dropdown and delete icon
+    function add() {
+      let newtask = document.getElementById("task").value;
+
+      if (newtask) {
+        // Create a new task object
+        let task = {
+          text: newtask,
+          status: 'Started', // Default status is 'Started'
+        };
+
+        // Add task to the tasks array
+        tasks.push(task);
+
+        // Create a new list item
+        let li = document.createElement("li");
+
+        // Create a span element to hold the task text
+        let taskText = document.createElement("span");
+        taskText.textContent = newtask;
+
+        // Create a select dropdown for task status
+        let statusSelect = document.createElement("select");
+        let statusOptions = ["Started", "Work in Progress", "Completed", "Not Completed", "On Hold"];
+        
+        // Populate the dropdown with status options
+        statusOptions.forEach(function (status) {
+          let option = document.createElement("option");
+          option.value = status;
+          option.textContent = status;
+          statusSelect.appendChild(option);
+        });
+
+        // Create a delete icon for each task
+        let deleteBtn = document.createElement("button");
+        deleteBtn.classList.add("delete-icon");
+        deleteBtn.innerHTML = "&#128465;"; // Trash icon
+        deleteBtn.onclick = function () {
+          li.remove(); // Remove the task when the delete icon is clicked
+          tasks = tasks.filter(taskItem => taskItem.text !== newtask); // Remove task from array
+        };
+
+        // Create a span for the green tick mark for completed task
+        let completedTick = document.createElement("span");
+        completedTick.classList.add("completed-tick");
+        completedTick.innerHTML = "&#10004;"; // Green tick
+
+        // Append task text, status dropdown, delete icon to the list item
+        li.appendChild(taskText);
+        li.appendChild(statusSelect); // Move status dropdown to the middle
+        li.appendChild(deleteBtn);
+        li.appendChild(completedTick);
+
+        // Append the new task to the task list
+        document.getElementById("tasklist").appendChild(li);
+
+        // Clear the input field
+        document.getElementById("task").value = "";
+
+        // Add event listener to status dropdown to hide delete button if status is "Completed"
+        statusSelect.addEventListener("change", function () {
+          task.status = statusSelect.value;
+          if (statusSelect.value === "Completed") {
+            completedTick.style.display = "inline";  // Show the green tick
+            deleteBtn.style.display = "none";  // Hide the delete icon
+          } else {
+            completedTick.style.display = "none"; // Hide the green tick
+            deleteBtn.style.display = "inline";  // Show the delete icon
+          }
+        });
+      } else {
+        alert("Please enter a task!");
+      }
+    }
+
+    // Function to clear the input field
+    function clearTask() {
+      document.getElementById("task").value = ""; // Clears the input field
+    }
+
+    // Function to toggle the menu visibility
+    function toggleMenu() {
+      const menu = document.getElementById("menuDropdown");
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
+    }
+
+    // Function to filter tasks based on status
+    function filterTasks(status) {
+      let filteredTasks;
+      if (status === 'completed') {
+        filteredTasks = tasks.filter(task => task.status === 'Completed');
+      } else if (status === 'notCompleted') {
+        filteredTasks = tasks.filter(task => task.status === 'Not Completed');
+      } else if (status === 'onHold') {
+        filteredTasks = tasks.filter(task => task.status === 'On Hold');
+      } else if (status === 'inProgress') {
+        filteredTasks = tasks.filter(task => task.status === 'Work in Progress');
+      } else {
+        filteredTasks = tasks; // Show all tasks by default
+      }
+      displayTasks(filteredTasks);
+      toggleMenu(); // Hide menu after selection
+    }
+
+    // Function to display tasks based on filter
+    function displayTasks(filteredTasks) {
+      const tasklist = document.getElementById("tasklist");
+      tasklist.innerHTML = ""; // Clear the current task list
+
+      filteredTasks.forEach(task => {
+        let li = document.createElement("li");
+        let taskText = document.createElement("span");
+        taskText.textContent = task.text;
+        li.appendChild(taskText);
+        tasklist.appendChild(li);
+      });
+    }
+  </script>
+</body>
+</html>
